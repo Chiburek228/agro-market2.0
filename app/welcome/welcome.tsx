@@ -1,6 +1,4 @@
-import { type FormEvent, useEffect, useMemo, useState } from "react";
-import logoDark from "./logo-dark.svg";
-import logoLight from "./logo-light.svg";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 type ProductCategory =
   | "Овощи"
@@ -22,16 +20,18 @@ type Product = {
   owner?: "system" | "me";
 };
 
+const UNSPLASH = (id: string) =>
+  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&q=80&w=800`;
+
 const INITIAL_PRODUCTS: Product[] = [
   {
     id: 1,
-    name: "Картофель ранний",
+    name: "Картофель ранний в мешках",
     price: 18,
     unit: "₽/кг",
     category: "Овощи",
     region: "Белгородская область",
-    image:
-      "https://images.unsplash.com/photo-1518977956815-dee006e48be0?auto=format&fit=crop&w=800&q=80",
+    image: UNSPLASH("1587731255977-1ff29f05fa3d"),
     badge: "Эко",
   },
   {
@@ -41,8 +41,7 @@ const INITIAL_PRODUCTS: Product[] = [
     unit: "₽/т",
     category: "Зерно",
     region: "Краснодарский край",
-    image:
-      "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80",
+    image: UNSPLASH("1500937386664-56d1dfef3854"),
     badge: "Опт",
   },
   {
@@ -52,8 +51,7 @@ const INITIAL_PRODUCTS: Product[] = [
     unit: "₽/т",
     category: "Зерно",
     region: "Ростовская область",
-    image:
-      "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=800&q=80",
+    image: UNSPLASH("1560806887-1e4cd0b6cbd6"),
     badge: "Опт",
   },
   {
@@ -63,8 +61,7 @@ const INITIAL_PRODUCTS: Product[] = [
     unit: "₽/кг",
     category: "Фрукты",
     region: "Липецкая область",
-    image:
-      "https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?auto=format&fit=crop&w=800&q=80",
+    image: UNSPLASH("1570913149827-d2ac84ab3f9a"),
     badge: "Эко",
   },
   {
@@ -74,19 +71,17 @@ const INITIAL_PRODUCTS: Product[] = [
     unit: "₽/л",
     category: "Молочная продукция",
     region: "Тверская область",
-    image:
-      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80",
+    image: UNSPLASH("1582719478250-c89cae4dc85b"),
     badge: "Эко",
   },
   {
     id: 6,
-    name: "Сельский трактор",
+    name: "Комбайн John Deere",
     price: 2150000,
     unit: "₽/шт",
     category: "Техника",
     region: "Воронежская область",
-    image:
-      "https://images.unsplash.com/photo-1535361802424-621f6466bb00?auto=format&fit=crop&w=800&q=80",
+    image: UNSPLASH("1535361802424-621f6466bb00"),
     badge: "Опт",
   },
   {
@@ -96,19 +91,17 @@ const INITIAL_PRODUCTS: Product[] = [
     unit: "₽/т",
     category: "Удобрения",
     region: "Самарская область",
-    image:
-      "https://images.unsplash.com/photo-1590412506268-ef4fb9a0c38b?auto=format&fit=crop&w=800&q=80",
+    image: UNSPLASH("1590412506268-ef4fb9a0c38b"),
     badge: "Опт",
   },
   {
     id: 8,
-    name: "Огурцы тепличные",
+    name: "Томаты на ветке",
     price: 120,
     unit: "₽/кг",
     category: "Овощи",
     region: "Московская область",
-    image:
-      "https://images.unsplash.com/photo-1587049352851-8d4e8913393b?auto=format&fit=crop&w=800&q=80",
+    image: UNSPLASH("1546476520-0a88d6587561"),
     badge: "Эко",
   },
   {
@@ -118,8 +111,7 @@ const INITIAL_PRODUCTS: Product[] = [
     unit: "₽/т",
     category: "Зерно",
     region: "Саратовская область",
-    image:
-      "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=80",
+    image: UNSPLASH("1501004318641-b39e6451bec6"),
     badge: "Опт",
   },
   {
@@ -129,8 +121,7 @@ const INITIAL_PRODUCTS: Product[] = [
     unit: "₽/кг",
     category: "Молочная продукция",
     region: "Алтайский край",
-    image:
-      "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
+    image: UNSPLASH("1544025162-d76694265947"),
     badge: "Эко",
   },
   {
@@ -140,19 +131,17 @@ const INITIAL_PRODUCTS: Product[] = [
     unit: "₽/т",
     category: "Удобрения",
     region: "Беларусь",
-    image:
-      "https://images.unsplash.com/photo-1618477388954-7852f32655ec?auto=format&fit=crop&w=800&q=80",
+    image: UNSPLASH("1618477388954-7852f32655ec"),
     badge: "Эко",
   },
   {
     id: 12,
-    name: "Фронтальный погрузчик",
+    name: "Трактор МТЗ",
     price: 3890000,
     unit: "₽/шт",
     category: "Техника",
     region: "Челябинская область",
-    image:
-      "https://images.unsplash.com/photo-1589924387558-4c1fea13312f?auto=format&fit=crop&w=800&q=80",
+    image: UNSPLASH("1604068549290-dea0e4a305ca"),
     badge: "Опт",
   },
   {
@@ -162,8 +151,7 @@ const INITIAL_PRODUCTS: Product[] = [
     unit: "₽/кг",
     category: "Фрукты",
     region: "Краснодарский край",
-    image:
-      "https://images.unsplash.com/photo-1592841200221-a6898f28266e?auto=format&fit=crop&w=800&q=80",
+    image: UNSPLASH("1592841200221-a6898f28266e"),
     badge: "Эко",
   },
   {
@@ -173,8 +161,7 @@ const INITIAL_PRODUCTS: Product[] = [
     unit: "₽/кг",
     category: "Овощи",
     region: "Нижегородская область",
-    image:
-      "https://images.unsplash.com/photo-1587731527661-9b9e4c4f3c28?auto=format&fit=crop&w=800&q=80",
+    image: UNSPLASH("1587731527661-9b9e4c4f3c28"),
     badge: "Эко",
   },
   {
@@ -184,8 +171,7 @@ const INITIAL_PRODUCTS: Product[] = [
     unit: "₽/т",
     category: "Зерно",
     region: "Ставропольский край",
-    image:
-      "https://images.unsplash.com/photo-1500043201629-50c77c5a57aa?auto=format&fit=crop&w=800&q=80",
+    image: UNSPLASH("1598981457915-aea220950616"),
     badge: "Опт",
   },
 ];
@@ -220,19 +206,19 @@ function inferUnitByCategory(category: ProductCategory): string {
 function inferImageByCategory(category: ProductCategory): string {
   switch (category) {
     case "Овощи":
-      return "https://images.unsplash.com/photo-1587731255977-1ff29f05fa3d?auto=format&fit=crop&w=800&q=80";
+      return UNSPLASH("1587731255977-1ff29f05fa3d");
     case "Фрукты":
-      return "https://images.unsplash.com/photo-1547514701-9cdcb1f59402?auto=format&fit=crop&w=800&q=80";
+      return UNSPLASH("1570913149827-d2ac84ab3f9a");
     case "Зерно":
-      return "https://images.unsplash.com/photo-1598981457915-aea220950616?auto=format&fit=crop&w=800&q=80";
+      return UNSPLASH("1598981457915-aea220950616");
     case "Молочная продукция":
-      return "https://images.unsplash.com/photo-1580915411954-282cb1c9c450?auto=format&fit=crop&w=800&q=80";
+      return UNSPLASH("1582719478250-c89cae4dc85b");
     case "Удобрения":
-      return "https://images.unsplash.com/photo-1518133835878-5d7f39e94933?auto=format&fit=crop&w=800&q=80";
+      return UNSPLASH("1590412506268-ef4fb9a0c38b");
     case "Техника":
-      return "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?auto=format&fit=crop&w=800&q=80";
+      return UNSPLASH("1604068549290-dea0e4a305ca");
     default:
-      return "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=800&q=80";
+      return UNSPLASH("1501004318641-b39e6451bec6");
   }
 }
 
@@ -364,9 +350,9 @@ export function Welcome() {
     }
 
     if (sortOrder === "cheap") {
-      list = list.sort((a, b) => a.price - b.price);
+      list = [...list].sort((a, b) => a.price - b.price);
     } else if (sortOrder === "expensive") {
-      list = list.sort((a, b) => b.price - a.price);
+      list = [...list].sort((a, b) => b.price - a.price);
     }
 
     return list;
@@ -437,52 +423,55 @@ export function Welcome() {
     }, 2500);
   };
 
+  const productsGridRef = useRef<HTMLDivElement>(null);
+
+  const scrollToProducts = () => {
+    productsGridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
-    <main className="min-h-screen bg-[#0a0a0c] text-white pt-16 pb-10">
+    <main className="min-h-screen bg-[#0a0a0c] text-white pt-16 pb-10 font-sans" style={{ fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif" }}>
       <div className="max-w-6xl mx-auto px-4 flex flex-col gap-10">
-        {/* Шапка */}
-        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full overflow-hidden bg-white shadow">
-              <img
-                src={logoLight}
-                alt="AgroMarket"
-                className="block w-full h-full object-contain dark:hidden"
-              />
-              <img
-                src={logoDark}
-                alt="AgroMarket"
-                className="hidden w-full h-full object-contain dark:block"
-              />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-emerald-300">
-                AgroMarket
-              </h1>
-              <p className="text-sm text-gray-400">
-                Маркетплейс свежей сельхозпродукции
-              </p>
-            </div>
+        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between transition-all duration-500 ease-in-out">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl font-black tracking-[0.2em] text-teal-300">
+              AGRO
+            </span>
+            <span className="text-xs text-gray-400 hidden sm:inline">
+              Маркетплейс свежей сельхозпродукции
+            </span>
           </div>
 
           <div className="flex flex-col gap-3 md:flex-row md:items-center">
-            <div className="flex-1 min-w-[220px]">
+            <div className="flex-1 min-w-[220px] space-y-2">
               <input
                 type="text"
                 placeholder="Поиск по названию или региону..."
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
-                className="w-full rounded-full bg-[#121218] border border-emerald-700/40 px-4 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="w-full rounded-full bg-[#121218] border border-teal-700/40 px-4 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-400 ease-in-out"
               />
+              {(searchQuery.trim() !== "" || activeCategory !== "Все") && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setActiveCategory("Все");
+                  }}
+                  className="text-xs text-teal-400 hover:text-teal-300 transition-colors duration-400 ease-in-out"
+                >
+                  Очистить все
+                </button>
+              )}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={() => setViewMode("market")}
-                className={`px-3 py-2 rounded-full text-xs font-medium ${
+                className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-400 ease-in-out ${
                   viewMode === "market"
-                    ? "bg-emerald-600 text-white"
-                    : "bg-transparent border border-emerald-700 text-gray-200"
+                    ? "bg-teal-600 text-white"
+                    : "bg-transparent border border-teal-700/60 text-gray-200 hover:border-teal-500/80"
                 }`}
               >
                 Маркет
@@ -490,10 +479,10 @@ export function Welcome() {
               <button
                 type="button"
                 onClick={() => setViewMode("my")}
-                className={`px-3 py-2 rounded-full text-xs font-medium ${
+                className={`px-2.5 py-1.5 rounded-full text-xs font-medium transition-all duration-400 ease-in-out ${
                   viewMode === "my"
-                    ? "bg-emerald-600 text-white"
-                    : "bg-transparent border border-emerald-700 text-gray-200"
+                    ? "bg-teal-600 text-white"
+                    : "bg-transparent border border-teal-700/60 text-gray-200 hover:border-teal-500/80"
                 }`}
               >
                 Мои объявления
@@ -501,32 +490,43 @@ export function Welcome() {
             </div>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="px-4 py-2 rounded-full bg-transparent border border-emerald-600 text-sm font-medium text-white hover:bg-emerald-600/20"
+              className="px-3 py-1.5 rounded-full bg-transparent border border-sky-600/70 text-xs font-medium text-white hover:bg-sky-600/20 transition-all duration-400 ease-in-out"
             >
               Стать поставщиком
             </button>
             <div className="text-xs text-gray-400">
               Избранное:{" "}
-              <span className="font-semibold text-emerald-400">
+              <span className="font-semibold text-sky-400">
                 {favorites.length}
               </span>
             </div>
           </div>
         </header>
 
-        {/* Герой + фильтры */}
-        <section className="grid gap-8 md:grid-cols-[1.05fr,0.95fr] items-start">
+        <section className="py-12 md:py-20 text-center md:text-left">
+          <h2 className="text-4xl md:text-6xl font-black text-white leading-tight tracking-tight max-w-3xl">
+            AgroMarket: Вкус, который нельзя подделать
+          </h2>
+          <p className="mt-6 text-lg text-gray-400 max-w-xl">
+            Настоящие продукты от проверенных хозяйств. Без подделок и компромиссов.
+          </p>
+          <button
+            type="button"
+            onClick={scrollToProducts}
+            className="mt-10 px-8 py-4 rounded-full bg-teal-600 text-white font-bold text-lg hover:bg-teal-500 transition-all duration-500 active:scale-[0.98]"
+          >
+            Смотреть продукты
+          </button>
+        </section>
+
+        <section className="grid gap-8 md:grid-cols-[1.05fr,0.95fr] items-start" ref={productsGridRef}>
           <div className="space-y-6">
             <div className="space-y-4">
-              <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-tight">
-                Свежие продукты
-                <br />
-                напрямую от проверенных фермеров
-              </h2>
-              <p className="text-sm md:text-base text-gray-300 max-w-xl">
-                Собирайте заказы у проверенных поставщиков: овощи, фрукты, зерно,
-                молочная продукция, техника и удобрения — с прозрачными ценами и
-                быстрой логистикой.
+              <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">
+                Свежие продукты напрямую от проверенных фермеров
+              </h3>
+              <p className="text-sm text-gray-300 max-w-xl">
+                Собирайте заказы: овощи, фрукты, зерно, молочная продукция, техника и удобрения — с прозрачными ценами.
               </p>
             </div>
 
@@ -534,13 +534,13 @@ export function Welcome() {
               <p className="text-xs uppercase tracking-wide text-gray-400">
                 Категории
               </p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 <button
                   onClick={() => setActiveCategory("Все")}
-                  className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                  className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-all duration-400 ease-in-out ${
                     activeCategory === "Все"
-                      ? "border-emerald-500 bg-emerald-600 text-white"
-                      : "border-gray-700 bg-[#101018] text-gray-300 hover:border-emerald-500 hover:text-white"
+                      ? "border-teal-500 bg-teal-600 text-white"
+                      : "border-gray-700 bg-[#101018] text-gray-300 hover:border-teal-500/80 hover:text-white"
                   }`}
                 >
                   <span>Все</span>
@@ -549,43 +549,43 @@ export function Welcome() {
                   <button
                     key={category.id}
                     onClick={() => setActiveCategory(category.id)}
-                    className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                    className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-all duration-400 ease-in-out ${
                       activeCategory === category.id
-                        ? "border-emerald-500 bg-emerald-600 text-white"
-                        : "border-gray-700 bg-[#101018] text-gray-300 hover:border-emerald-500 hover:text-white"
+                        ? "border-teal-500 bg-teal-600 text-white"
+                        : "border-gray-700 bg-[#101018] text-gray-300 hover:border-teal-500/80 hover:text-white"
                     }`}
                   >
-                    <span>{category.icon}</span>
+                    <span className="text-[0.65rem] leading-none">{category.icon}</span>
                     <span>{category.label}</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-6 text-xs text-gray-400">
+            <div className="flex flex-wrap gap-4 text-xs text-gray-400">
               <div>
-                <span className="font-semibold text-emerald-400">500+</span>{" "}
+                <span className="font-semibold text-teal-400">500+</span>{" "}
                 фермерских хозяйств
               </div>
               <div>
-                <span className="font-semibold text-emerald-400">24 часа</span>{" "}
+                <span className="font-semibold text-sky-400">24 часа</span>{" "}
                 среднее время доставки
               </div>
               <div>
-                <span className="font-semibold text-emerald-400">4.9★</span>{" "}
+                <span className="font-semibold text-teal-400">4.9★</span>{" "}
                 средний рейтинг покупателей
               </div>
             </div>
           </div>
 
           {/* Список товаров */}
-          <div className="rounded-3xl bg-[#111119] border border-emerald-700/40 shadow-xl p-5 space-y-4">
+          <div className="rounded-2xl bg-[#111119] border border-teal-700/30 shadow-lg p-4 space-y-4 transition-all duration-400 ease-in-out">
             <div className="flex items-center justify-between gap-2">
               <h3 className="text-sm font-semibold text-white">
                 {viewMode === "market" ? "Товары" : "Мои объявления"} (
                 {filteredProducts.length})
               </h3>
-              <span className="text-[11px] px-2 py-1 rounded-full bg-emerald-900/40 text-emerald-300">
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-teal-900/40 text-teal-300">
                 Прототип маркетплейса
               </span>
             </div>
@@ -606,7 +606,7 @@ export function Welcome() {
                     | "cheap"
                     | "expensive")
                 }
-                className="rounded-full bg-[#15151f] border border-gray-700 px-3 py-1 text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="rounded-full bg-[#15151f] border border-gray-700 px-3 py-1 text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-teal-500 transition-all duration-400 ease-in-out"
               >
                 <option value="none">Без сортировки</option>
                 <option value="cheap">Сначала дешёвые</option>
@@ -614,13 +614,19 @@ export function Welcome() {
               </select>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 transition-opacity duration-500 ease-in-out">
               {isLoading
                 ? Array.from({ length: 4 }).map((_, index) => (
                     <div
                       key={index}
-                      className="h-32 rounded-2xl bg-[#15151f] border border-gray-800 animate-pulse"
-                    />
+                      className="rounded-2xl overflow-hidden bg-[#15151f] border border-gray-800 animate-pulse"
+                    >
+                      <div className="w-full aspect-video bg-[#1a1a24]" />
+                      <div className="p-3 space-y-2">
+                        <div className="h-3 w-2/3 rounded bg-[#1a1a24]" />
+                        <div className="h-3 w-1/2 rounded bg-[#1a1a24]" />
+                      </div>
+                    </div>
                   ))
                 : filteredProducts.map((product) => (
                     <ProductCard
@@ -645,8 +651,8 @@ export function Welcome() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-3xl bg-[#0a0a0c] text-white shadow-2xl border border-emerald-700/60 p-6 animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-500 ease-in-out">
+          <div className="w-full max-w-md rounded-2xl bg-[#0a0a0c] text-white shadow-2xl border border-teal-700/50 p-5 animate-fade-in">
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
                 <h2 className="text-lg font-semibold">Стать поставщиком</h2>
@@ -656,7 +662,7 @@ export function Welcome() {
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-gray-400 hover:text-white text-xl leading-none"
+                className="text-gray-400 hover:text-white text-lg leading-none transition-colors duration-400"
                 aria-label="Закрыть"
               >
                 ×
@@ -673,7 +679,7 @@ export function Welcome() {
                   value={newName}
                   onChange={(event) => setNewName(event.target.value)}
                   placeholder="Например, Картофель столовый, 25 кг"
-                  className="w-full rounded-2xl bg-[#14141c] border border-gray-700 px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full rounded-xl bg-[#14141c] border border-gray-700 px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-300"
                   required
                 />
               </div>
@@ -688,7 +694,7 @@ export function Welcome() {
                     onChange={(event) =>
                       setNewCategory(event.target.value as ProductCategory)
                     }
-                    className="w-full rounded-2xl bg-[#14141c] border border-gray-700 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full rounded-xl bg-[#14141c] border border-gray-700 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-300"
                   >
                     {CATEGORY_OPTIONS.map((category) => (
                       <option key={category.id} value={category.id}>
@@ -709,7 +715,7 @@ export function Welcome() {
                     value={newPrice}
                     onChange={(event) => setNewPrice(event.target.value)}
                     placeholder="Например, 25 000"
-                    className="w-full rounded-2xl bg-[#14141c] border border-gray-700 px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full rounded-xl bg-[#14141c] border border-gray-700 px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-300"
                     required
                   />
                 </div>
@@ -722,7 +728,7 @@ export function Welcome() {
                 </p>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-full bg-emerald-600 text-sm font-semibold text-white hover:bg-emerald-500"
+                  className="px-3 py-1.5 rounded-full bg-teal-600 text-xs font-semibold text-white hover:bg-teal-500 transition-all duration-400 ease-in-out"
                 >
                   Добавить товар
                 </button>
@@ -733,8 +739,8 @@ export function Welcome() {
       )}
 
       {selectedProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-2xl rounded-3xl bg-[#0a0a0c] text-white shadow-2xl border border-emerald-700/60 p-6 animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-500 ease-in-out">
+          <div className="w-full max-w-2xl rounded-2xl bg-[#0a0a0c] text-white shadow-2xl border border-teal-700/50 p-5 animate-fade-in">
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
                 <h2 className="text-lg font-semibold">{selectedProduct.name}</h2>
@@ -745,7 +751,7 @@ export function Welcome() {
               </div>
               <button
                 onClick={() => setSelectedProduct(null)}
-                className="text-gray-400 hover:text-white text-xl leading-none"
+                className="text-gray-400 hover:text-white text-lg leading-none transition-colors duration-400"
                 aria-label="Закрыть"
               >
                 ×
@@ -773,11 +779,11 @@ export function Welcome() {
               <div className="space-y-4">
                 <div className="rounded-2xl bg-[#15151f] border border-gray-800 p-4 space-y-2">
                   <div className="text-sm text-gray-400">Цена</div>
-                  <div className="text-xl font-semibold text-emerald-300">
+                  <div className="text-lg font-semibold text-teal-300">
                     {selectedProduct.price.toLocaleString("ru-RU")}{" "}
                     {selectedProduct.unit}
                   </div>
-                  <button className="mt-3 w-full px-4 py-2 rounded-full bg-emerald-600 text-sm font-semibold text-white hover:bg-emerald-500">
+                  <button className="mt-3 w-full px-3 py-2 rounded-full bg-teal-600 text-sm font-semibold text-white hover:bg-teal-500 transition-all duration-400 ease-in-out">
                     Связаться с поставщиком
                   </button>
                 </div>
@@ -799,9 +805,9 @@ export function Welcome() {
                           key={product.id}
                           type="button"
                           onClick={() => setSelectedProduct(product)}
-                          className="flex items-center gap-3 rounded-xl bg-[#15151f] border border-gray-800 px-2 py-2 text-left hover:border-emerald-500/80"
+                          className="flex items-center gap-2 rounded-xl bg-[#15151f] border border-gray-800 px-2 py-1.5 text-left hover:border-teal-500/60 transition-all duration-400 ease-in-out"
                         >
-                          <div className="h-10 w-10 overflow-hidden rounded-lg">
+                          <div className="h-8 w-8 overflow-hidden rounded-lg flex-shrink-0">
                             <img
                               src={product.image}
                               alt={product.name}
@@ -812,7 +818,7 @@ export function Welcome() {
                             <div className="text-xs font-medium text-white line-clamp-1">
                               {product.name}
                             </div>
-                            <div className="text-[11px] text-emerald-300">
+                            <div className="text-[11px] text-teal-300">
                               {product.price.toLocaleString("ru-RU")}{" "}
                               {product.unit}
                             </div>
@@ -832,7 +838,7 @@ export function Welcome() {
           {toasts.map((toast) => (
             <div
               key={toast.id}
-              className="rounded-2xl bg-[#15151f] border border-emerald-700/70 px-4 py-2 text-xs text-gray-100 shadow-lg animate-fade-in"
+              className="rounded-xl bg-[#15151f] border border-teal-700/50 px-3 py-1.5 text-xs text-gray-100 shadow-lg animate-fade-in"
             >
               {toast.message}
             </div>
@@ -860,50 +866,68 @@ function ProductCard({
   showDelete,
   onDelete,
 }: ProductCardProps) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   return (
-    <div className="group flex flex-col text-left rounded-2xl overflow-hidden bg-[#15151f] border border-gray-800 hover:border-emerald-500/80 shadow-sm hover:shadow-emerald-900/40 transition-all animate-fade-in">
+    <div className="group flex flex-col text-left rounded-xl overflow-hidden bg-[#15151f] border border-gray-800 hover:border-teal-500/60 shadow-sm hover:shadow-teal-900/20 transition-all duration-500 ease-in-out animate-fade-in">
       <button
         type="button"
         onClick={onClick}
         className="flex-1 flex flex-col text-left"
       >
-        <div className="h-24 w-full overflow-hidden">
+        <div className="relative w-full aspect-video overflow-hidden rounded-t-xl">
+          {!imageLoaded && (
+            <div
+              className="absolute inset-0 rounded-t-xl bg-[#1a1a24] animate-pulse"
+              aria-hidden
+            />
+          )}
           <img
             src={product.image}
             alt={product.name}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className={`h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-[1.03] ${
+              imageLoaded ? "opacity-100" : "opacity-0"
+            }`}
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageLoaded(true)}
           />
+          <div
+            className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/75 to-transparent pointer-events-none"
+            aria-hidden
+          />
+          <div className="absolute bottom-1.5 left-1.5 right-1.5">
+            <span className="text-xs font-medium text-white line-clamp-2 drop-shadow-md">
+              {product.name}
+            </span>
+          </div>
         </div>
-        <div className="p-3 flex flex-col gap-1.5">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-900/50 text-emerald-300">
+        <div className="p-2.5 flex flex-col gap-1">
+          <div className="flex items-center justify-between gap-1.5">
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-teal-900/50 text-teal-300">
               {product.badge}
             </span>
-            <span className="text-xs text-gray-400">{product.region}</span>
+            <span className="text-[11px] text-gray-400">{product.region}</span>
           </div>
-          <div className="text-sm font-medium text-white line-clamp-2">
-            {product.name}
-          </div>
-          <div className="text-sm font-semibold text-emerald-300">
+          <div className="text-xs font-semibold text-teal-300">
             {product.price.toLocaleString("ru-RU")} {product.unit}
           </div>
         </div>
       </button>
-      <div className="flex items-center justify-between px-3 pb-2 pt-1 text-[11px] text-gray-400">
+      <div className="flex items-center justify-between px-2.5 pb-1.5 pt-0.5 text-[10px] text-gray-400">
         <button
           type="button"
           onClick={onToggleFavorite}
-          className={`flex items-center gap-1 ${
-            isFavorite ? "text-emerald-300" : "text-gray-500"
-          } hover:text-emerald-200`}
+          className={`flex items-center gap-0.5 transition-colors duration-400 ease-in-out ${
+            isFavorite ? "text-sky-400" : "text-gray-500"
+          } hover:text-sky-300`}
         >
-          <span aria-hidden="true">{isFavorite ? "❤️" : "🤍"}</span>
+          <span aria-hidden="true" className="text-sm leading-none">{isFavorite ? "❤️" : "🤍"}</span>
         </button>
         {showDelete && onDelete && (
           <button
             type="button"
             onClick={onDelete}
-            className="text-[11px] text-red-400 hover:text-red-300"
+            className="text-[10px] text-red-400 hover:text-red-300 transition-colors duration-400"
           >
             Удалить
           </button>

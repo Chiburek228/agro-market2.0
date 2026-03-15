@@ -1,87 +1,40 @@
-# Welcome to React Router!
+# AgroMarket
 
-A modern, production-ready template for building full-stack React applications using React Router.
+**Профессиональная автоматизация фермерского бизнеса.**
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+MVP маркетплейса натуральных продуктов: каталог, корзина с сохранением в localStorage, фильтрация по категориям, форма связи с шефом и адаптивный интерфейс для заказов с полей.
 
-## Features
+## Стек
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- **React Router 7** — маршрутизация и SSR
+- **Tailwind 4** — стили и адаптив
+- **TypeScript** — типизация
+- **Vite** — сборка и dev-сервер
 
-## Getting Started
+Иконки: inline SVG (совместимо с Lucide-подобным стилем).
 
-### Installation
-
-Install the dependencies:
+## Запуск
 
 ```bash
 npm install
-```
-
-### Development
-
-Start the development server with HMR:
-
-```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+Приложение доступно по адресу [http://localhost:5173](http://localhost:5173).
 
-## Building for Production
-
-Create a production build:
+## Сборка
 
 ```bash
 npm run build
 ```
 
-## Deployment
+## Структура
 
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+- `app/routes/` — страницы (главная, товар, корзина)
+- `app/components/` — Header, ProductCard
+- `app/context/CartContext.tsx` — глобальная корзина и localStorage
+- `app/data/products.ts` — каталог товаров и категории
 
 ---
 
-Built with ❤️ using React Router.
+*AgroMarket — вкус, который нельзя подделать.*

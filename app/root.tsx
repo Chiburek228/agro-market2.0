@@ -1,3 +1,4 @@
+import "./app.css";
 import {
   isRouteErrorResponse,
   Links,
@@ -8,7 +9,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
-import "./app.css";
+import { CartProvider } from "./context/CartContext";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -25,15 +26,17 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ru">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body>
-        {children}
+      <body className="bg-[#FDFCF9] text-[#1A1A1A] antialiased min-h-screen font-sans" style={{ fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif" }}>
+        <CartProvider>
+          {children}
+        </CartProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -42,7 +45,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <>
+      <Outlet />
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
